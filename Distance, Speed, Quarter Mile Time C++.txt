@@ -1,0 +1,159 @@
+//Si Yuan Chen 20830005
+
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+
+class Racer
+{
+	private:
+		double max_accel;
+		double max_speed;
+		
+	public:
+		string raceName;
+		string car;
+		int carNum;
+		
+		racer()
+		{
+			raceName = "";
+			car = "";
+			carNum = 0;
+		}
+		racer(string name, string carName, int num)
+		{
+			raceName = name;
+			car = carName;
+			carNum = num;
+		}
+		
+		bool input(istream & raceList)
+		{
+			return raceList >> raceName >>
+			carNum >> car>> max_accel >> max_speed;
+		}
+
+		
+		void set_accel(double accel)
+		{
+			max_accel = accel;
+		}
+		void set_speed(double speed)
+		{
+			max_speed = speed;
+		}
+		
+		double get_accel()
+		{
+			return max_accel;
+		}
+		double get_speed()
+		{
+			return max_speed;
+		}
+		
+		void copyGearing(Racer r2)
+		{
+			set_accel(r2.get_accel());
+			set_speed(r2.get_speed());
+		}
+		
+		double distance(double vInit, double time)
+		{
+			double timeMax = (fabs(vInit -
+			(get_speed() / 3.6)) / get_accel());
+			if (timeMax > time)
+			return ((vInit * time) + (0.5 * get_accel() * pow(time, 2)));
+				
+			else
+			return ((vInit * timeMax) + (0.5 * get_accel() * pow(timeMax, 2))
+			+ ((get_speed() / 3.6) * (time - timeMax)));
+		}
+		
+		double time(double vInit, double distance)
+		{
+			double timeMax = (fabs(vInit - (get_speed() / 3.6)) / get_accel());
+			double distanceMax = ((vInit * timeMax) + (0.5 *
+			get_accel() * pow(timeMax, 2)));
+			
+			if (distanceMax > distance)
+			return (((-1.0 * vInit) + sqrt(pow(vInit, 2) - (4 * (0.5
+			* get_accel()) * (-1.0 * distance)))) / get_accel());
+			
+			else
+			return (timeMax + ((distance - distanceMax) / (get_speed() / 3.6)));
+		}
+};
+
+const int numRacers = 4;
+
+int main()
+{
+	int winner1, winner2, champ;
+	ifstream raceDay("racecars.txt");
+	if (!raceDay)
+	{
+		cout << "FAILURE" << endl;
+		system("PAUSE");
+		return EXIT_FAILURE;
+	}
+	Racer drivers[numRacers];
+	
+	for (int i = 0; i < numRacers; i++)
+	{
+		drivers[i].input(raceDay);
+	}
+	cout << "ROUND 1:" << endl;
+	for (int i = 0; i < numRacers - 1; i+=2)
+	{
+		cout << "Number " << drivers[i].carNum << ", " << drivers[i].raceName
+		<< " in the " << drivers[i].car << " VS " << "Number "
+		<< drivers[i+1].carNum << ", " << drivers[i+1].raceName
+		<< " in the " << drivers[i+1].car << endl;
+		if (i < 2)
+		cout << "AND" << endl;
+	}
+	if (drivers[0].time(0, 402) < drivers[1].time(0, 402))
+	winner1 = 0;
+	else
+	winner1 = 1;
+	
+	if (drivers[2].time(0, 402) < drivers[3].time(0, 402))
+	winner2 = 2;
+	else
+	winner2 = 3;
+	cout << "The winners were car numbers " << drivers[winner1].carNum
+	<< " and " << drivers[winner2].carNum << endl;
+	cout << "ROUND 2:" << endl;
+	cout << "Number " << drivers[winner1].carNum << ", "
+	<< drivers[winner1].raceName << " in the " << drivers[winner1].car
+	<< " VS " << "Number " << drivers[winner2].carNum << ", "
+	<< drivers[winner2].raceName << " in the " << drivers[winner2].car << endl;
+	
+	if (drivers[winner1].time(0, 402) < drivers[winner2].time(0, 402))
+	champ = winner1;
+	else
+	champ = winner2;
+	cout << "Congrats to our champion, Number " << drivers[champ].carNum
+	<< ", " << drivers[champ].raceName << " in the " << drivers[champ].car
+	<< endl;
+	system("PAUSE");
+	return EXIT_SUCCESS;
+}
+
+/*
+ROUND 1:
+Number 1, TheSnake in the Barracuda VS Number 2, Herbie in the Volkswagen
+AND
+Number 3, Mongoose in the Duster VS Number 4, SpeedRacer in the PopsRacer
+The winners were car numbers 1 and 4
+ROUND 2:
+Number 1, TheSnake in the Barracuda VS Number 4, SpeedRacer in the PopsRacer
+Congrats to our champion, Number 4, SpeedRacer in the PopsRacer
+Press any key to continue . . .
+
+*/

@@ -1,0 +1,175 @@
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+
+class midterm
+{
+	private:
+	double mcMark, shortAnswer;
+	string name;
+	
+	public:
+	midterm()
+	{
+		mcMark = 0;
+		shortAnswer = 0;
+		name = "";
+	}
+	midterm(string student)
+	{
+		mcMark = 0;
+		shortAnswer = 0;
+		name = student;
+	}
+	
+	midterm(string student, double MC, double shortAns)
+	{
+		if (0 <= shortAns && 100 >= shortAns && 0 <= MC && 100 >= MC)
+		{
+			mcMark = MC;
+			shortAnswer = shortAns;
+			name = student;
+		}
+	}
+
+	
+	double get_mcMark() const
+	{
+		return mcMark;
+	}
+	double get_shortAns() const
+	{
+		return shortAnswer;
+	}
+	string get_name()
+	{
+		return name;
+	}
+	
+	void set_mcMark(double MC)
+	{
+		if (MC >= 0 && MC <= 100)
+		mcMark = MC;
+	}
+	void set_shortAns(double shortA)
+	{
+		if (shortA >= 0 && shortA <= 100)
+		shortAnswer = shortA;
+	}
+	void set_name(string student)
+	{
+		name = student;
+	}
+	
+	double midMark() const
+	{
+		if (mcMark < shortAnswer)
+		return (0.7*mcMark + 0.3*shortAnswer);
+		
+		else
+		return ((mcMark + shortAnswer)/2);
+	}
+	
+	int test(double newMark) const
+	{
+		const double tol = 0.0001;
+		if (fabs(midMark() - newMark) < tol) 
+		return 0;
+		
+		else if (midMark() < newMark)
+		return -1;
+		
+		else
+		return 1;
+
+	}
+};
+
+int main()
+{
+	string student1 = "", student2 = "";
+	double mc1 = -1, mc2 = -1;
+	double short1 = -1, short2 = -1;
+	
+		cout << "Enter student last name, their mc mark, and their short answer mark" << endl;
+		cin >> student1 >> mc1 >> short1;
+		midterm mid1(student1, mc1, short1);
+	while(mid1.get_mcMark() != mc1 || mid1.get_shortAns() != short1)
+	{
+		cout << "Invalid entry, enter a valid mc mark and short answer mark" << endl;
+		cin  >> mc1 >> short1;
+		mid1.set_mcMark(mc1);
+		mid1.set_shortAns(short1);
+	}
+	
+	double midmarks = mid1.midMark();
+	
+	cout << "The midterm mark for " << student1 << " is " << midmarks << endl;
+	
+	
+	cout << "Enter a different student name, mc and short answer mark" << endl;
+	cin >> student2 >> mc2 >> short2;
+	midterm mid2(student2, mc2, short2);
+	while(mid2.get_mcMark() != mc2 || mid2.get_shortAns() != short2)
+	{
+		cout << "Enter a different valid mc and short answer mark" << endl;
+		cin >> mc2 >> short2;
+		mid2.set_mcMark(mc2);
+		mid2.set_shortAns(short2);
+	}
+		
+	
+	int compare = mid2.test(midmarks);
+	cout << compare << " ";
+	
+	if ( compare == 0)
+	cout << "The students scored the same" << endl;
+		
+	else if (compare == -1)
+	cout << student2 << " scored below " << student1 << endl;
+		
+	else
+	cout << student2 << " scored higher than " << student1 << endl;
+	
+	system ("PAUSE");
+	return EXIT_SUCCESS;
+}
+
+
+/*
+Enter student last name, their mc mark, and their short answer mark
+Qiu 85 60
+The midterm mark for Qiu is 72.5
+Enter a different student name, mc and short answer mark
+Lee 100 100
+1 Lee scored higher than Qiu
+Press any key to continue . . .
+
+
+Enter student last name, their mc mark, and their short answer mark
+bruh 532 8675
+Invalid entry, enter a valid mc mark and short answer mark
+524 7
+Invalid entry, enter a valid mc mark and short answer mark
+543.5436 43
+Invalid entry, enter a valid mc mark and short answer mark
+54.737 97.423
+The midterm mark for bruh is 67.5428
+Enter a different student name, mc and short answer mark
+nah 32 76.432524622
+-1 nah scored below bruh
+Press any key to continue . . .
+
+Enter student last name, their mc mark, and their short answer mark
+Does_the_team_go 56.43 62.62
+The midterm mark for Does_the_team_go is 58.287
+Enter a different student name, mc and short answer mark
+Go_team! 56.43 62.62
+0 The students scored the same
+Press any key to continue . . .
+
+
+*/

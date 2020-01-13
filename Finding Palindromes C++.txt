@@ -1,0 +1,71 @@
+//Si Yuan Chen 		20830005
+
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+
+const int maxDigits = 9;
+
+bool recursion(int num[maxDigits], int totalNum, int initial)
+{
+	if (num[totalNum] == num[initial] && totalNum > 0)
+	return recursion(num, totalNum-1, initial + 1);
+	
+	else
+	return num[totalNum] == num[initial];
+
+}
+
+
+int main()
+{
+	int num[maxDigits];
+	int n = 0;
+	int i = 0;
+	cout << "Enter a number (no negatives), press enter when done" << endl;
+	cin >> n;
+	if (n < 0)
+	{
+		cout << "I SAID NO NEGATIVES" << endl;
+		system("PAUSE");
+		return EXIT_FAILURE;
+	}
+	do
+	{
+		num[i] = n%10;
+		n/=10;
+		i++;
+	}while (n % 10 != 0);
+	if (recursion(num, i-1, 0))
+	cout << "The number is a palindrome" << endl;
+	else
+	cout << "The number is not a palindrome" << endl;
+}
+
+/*
+Enter a number (no negatives), press enter when done
+1234321
+The number is a palindrome
+
+--------------------------------
+Process exited after 6.471 seconds with return value 0
+Press any key to continue . . .
+
+Enter a number (no negatives), press enter when done
+654213
+The number is not a palindrome
+
+--------------------------------
+Process exited after 2.851 seconds with return value 0
+Press any key to continue . . .
+
+
+Enter a number (no negatives), press enter when done
+-3214
+I SAID NO NEGATIVES
+Press any key to continue . . .
+
+*/

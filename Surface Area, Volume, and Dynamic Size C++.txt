@@ -1,0 +1,212 @@
+//Si Yuan Chen, 20830005
+
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+
+const int numRows = 82, numCol = 78;
+
+void inDepths (ifstream & depthFile, int depths[numRows][numCol])
+{
+	for (int i = 0; i < numRows; i++)
+	{
+		for (int x = 0; x < numCol; x++)
+		depthFile >> depths[i][x];
+	}
+}
+
+void drawLake (ofstream & printDepth, int depths[numRows][numCol], int rise)
+{
+	for (int i = 0; i < numRows; i++)
+	{
+		for (int x = 0; x < numCol; x++)
+		{
+			depths[i][x] -= rise;
+			if (depths[i][x] < 0)
+			printDepth << "w";
+			 
+			else 
+			printDepth << "l";
+		}
+		printDepth << endl;
+	}
+}
+
+void lakeSize(ofstream & printDepth, double & surfaceArea,
+double & volume, int depthChange, int depths[numRows][numCol])
+{
+	surfaceArea = 0;
+	volume = 0;
+	for (int i = 0; i < numRows; i++)
+	{
+		for (int x = 0; x < numCol; x++)
+		{
+			depths[i][x] -= depthChange;
+			if (depths[i][x] < 0)
+			{
+				surfaceArea += 100;
+				volume += fabs(100*(depths[i][x]/10.0));
+			}
+		}
+
+	}
+	printDepth << "The surface area of the lake is " << surfaceArea
+	<< " square meters, and the volume is " << volume <<" cubic meters" << endl;
+}
+
+void peaks(ofstream & printDepth, int & posX, int & posY,
+bool oneForWater, int depths[numRows][numCol])
+{
+	string which = "height";
+	int maxHeight = 0;
+	int whichOne = 1;
+	if (oneForWater = 1)
+	{
+		whichOne = -1;
+		which = "depth";
+	}
+	for (int i = 0; i < numRows; i++)
+	{
+		for (int x = 0; x < numCol; x++)
+		{
+			if (whichOne * depths[i][x] > maxHeight)
+			{
+				maxHeight = fabs(depths[i][x]);
+			}
+		}
+
+	}
+	for (int i = 0; i < numRows; i++)
+	{
+		for (int x = 0; x < numCol; x++)
+		{
+			if (depths[i][x] == whichOne * maxHeight)
+			{
+				printDepth << "The max " << which << " is at ("
+				<< i*10 << "m," << x*10 << "m)" << endl;
+			}
+		}
+
+	}
+}
+
+int main()
+{
+	double surface = 0, volume = 0;
+	int x = 0, y = 0;
+	ifstream depths("depths.txt");
+	ofstream printLake("lakeDepth.txt");
+	if (!depths)
+	{
+		cout << "error";
+		system("PAUSE");
+		return EXIT_FAILURE;
+	}
+	int lakeDepth[numRows][numCol] = {0};
+	inDepths(depths, lakeDepth);
+	printLake << "Original Lake" << endl;
+	lakeSize(printLake, surface, volume, 0, lakeDepth);
+	printLake << "New Lake" << endl;
+	lakeSize(printLake, surface, volume, -25, lakeDepth);
+	drawLake (printLake, lakeDepth, 0);
+	
+	depths.close();
+	printLake.close();
+	
+	system("PAUSE");
+	return EXIT_SUCCESS;
+}
+
+
+/*
+Original Lake
+The surface area of the lake is 342800 square meters, and the volume is 8.90308e+006 cubic meters
+New Lake
+The surface area of the lake is 326700 square meters, and the volume is 8.06288e+006 cubic meters
+llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+lllllllllllllllllllllllllllllllllllllllllllwwwwwwwwwwwwwwwwwwwllllllllllllllll
+llllllllllllllllllllllllllllllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwlllllllwlllll
+lllllllllllllllllllllllllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllwlllll
+lllllllllllllllllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllwwllll
+llllllllllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllwwllll
+lllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllwwwlll
+lllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllwwwlll
+llllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllwwwlll
+lllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllwwwlll
+lllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllwwllll
+lllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllwwllll
+llllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllwwllll
+llllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllwlllll
+lllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllll
+lllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllll
+lllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllll
+lllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllll
+lllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllll
+llllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllll
+llllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllll
+lllllllllllllllllwwwwwlwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllll
+llwlllllllllllllllwwwwlwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllll
+llwwwllllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllll
+llwwwwllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllll
+llwwwwllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllll
+llwwwwllllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllll
+llwwwwlllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllll
+llwwwwwllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+llwwwwwwwwwwlllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+llwwwwwwwwwwlwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+llllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+llllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+llllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+llllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+llllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+llllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllllllwlwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+llllllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+llllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllll
+lllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+lllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+llllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+lllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+llllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+lllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+llwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+llwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+llwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllll
+llwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllllll
+llwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllllll
+llwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllllll
+llwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllllll
+lllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllllllll
+llllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllllllllll
+lllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllllllllll
+lllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllllllllllll
+llllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllllllllllllllll
+lllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllllllllllllllllll
+lllllllllllwwwwwwwwwwwwwwwwwwwwwwwwwwlllllllllllllllllllllllllllllllllllllllll
+llllllllllllwwwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllllllllllllllllllll
+llllllllllllllwwwwwwwwwwwwwwwwwwwwwwllllllllllllllllllllllllllllllllllllllllll
+lllllllllllllllllwwwwwwwwwwwwwwwwwllllllllllllllllllllllllllllllllllllllllllll
+lllllllllllllllllllwwwwwwwwwwwllwlllllllllllllllllllllllllllllllllllllllllllll
+llllllllllllllllllllllwwwwwwllllllllllllllllllllllllllllllllllllllllllllllllll
+llllllllllllllllllllllwwwlllllllllllllllllllllllllllllllllllllllllllllllllllll
+llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll
+
+*/

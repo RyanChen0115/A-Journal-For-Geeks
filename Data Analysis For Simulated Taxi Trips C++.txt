@@ -1,0 +1,88 @@
+//SiYuan Chen & Taylor Fielding
+
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+
+int main()
+{
+	bool returnTrip = 0;
+	int stops = 0;
+	double distanceX = 0;
+	double distanceY = 0;
+	double totalDistance = 0;
+	double totalCost = 0;
+	int tripNumber = 1;
+	double longestTrip = 0;
+	double mostExpensive = 0;
+	double costPerStop = 12.0;
+	double costPerKM = 2.30;
+	
+	ifstream data("taxi.txt");
+	
+	if (!data)
+	{
+		system("PAUSE");
+		return EXIT_FAILURE;
+	}
+	ofstream report("report.txt");
+	report << "Trip Number" << setw(18) << "Return To Dock?" << setw(8) 
+	<< "Stops" << setw(11) << "Distance" << setw(7) << "Cost" << setw(13) 
+	<< "Cumulative" << setw(13) << "Cumulative" << endl << setw(68) 
+	<< "Distance" << setw(11) << "Cost" << endl;
+	while (data >> returnTrip >> stops)
+	{
+		double tripDistance = 0;
+		double cost = 0;
+		double oldX = 0;
+		double oldY = 0;
+		
+		for (int coordinates = 0; coordinates < stops; coordinates ++)
+		{
+		
+			double legDistance = 0;
+			data >> distanceX >> distanceY;	
+			legDistance = (double)sqrt(pow(distanceX - oldX,2) + 
+			pow(distanceY - oldY,2));
+			tripDistance += legDistance;
+			
+			oldX = distanceX;
+			oldY = distanceY;
+		}
+		if (returnTrip == 1)
+		{
+			int legDistance = sqrt(pow(oldX,2) + pow(oldY,2));
+			tripDistance += legDistance;		
+		}
+		cost = costPerStop*stops + costPerKM*tripDistance;
+		totalDistance += tripDistance;
+		totalCost += cost;
+		if (tripDistance > longestTrip)
+		longestTrip = tripDistance;
+		
+		if (cost > mostExpensive)
+		mostExpensive = cost;
+		if (tripNumber <= 5 || tripNumber % 10 == 5)
+		{
+			report << setw(11) << tripNumber << setw(18) << returnTrip << setw(8) 
+			<< stops << setw(10) << fixed << setprecision(2) << tripDistance 
+			<< setw(8) << cost << setw(11) << totalDistance << setw(11) 
+			<< totalCost << endl;
+		}
+		tripNumber ++ ;
+		}
+		
+	report << "The longest trip of the month was " << longestTrip << endl;
+	report << "The the most expensive trip cost $" << mostExpensive << endl;
+	report << "The total distance travelled was " << totalDistance << endl;
+	report << "The total amount collected was $" << totalCost << endl;
+	
+	data.close();
+	report.close();
+	system("PAUSE");
+	return EXIT_SUCCESS;
+}

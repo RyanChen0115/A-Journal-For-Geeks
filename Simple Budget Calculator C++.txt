@@ -1,0 +1,102 @@
+//Ryan Chen
+
+#include <iostream>
+#include <cstdlib>
+
+//Always include following line
+using namespace std;
+
+int main()
+{
+	cout << "How much money have you saved?" << endl;
+	double money = 0;
+	cin >> money;
+	double rCoffee = 1.25;
+	double sCoffee = 0.95;
+	double donut = 1.10;
+	double chocolate = 0.75;
+	double tart = 0.60;
+	
+	
+	if (money >= sCoffee)
+	{
+		cout << "You can afford a ";
+		if (money >= rCoffee)
+		{
+			cout << "regular coffee." << endl;
+			money = money - rCoffee;
+		}
+		else
+		{
+			cout << "small coffee." << endl;
+			money = money - sCoffee;
+		}
+	}
+	else
+		cout << "You can't afford any coffee :(" << endl;
+
+	if (money >= tart)
+		{
+			cout << "You can afford a ";
+			if (money >= donut)
+				cout << "donut." << endl;
+			else if (money >= chocolate)
+				cout << "chocolate." << endl;
+			else
+				cout << "mini tart" << endl;
+		}
+	else
+		cout << "You can't afford any sweets :(" << endl;	
+	system("PAUSE");
+    return EXIT_SUCCESS;
+}
+
+/*
+How much money have you saved?
+.30
+You can't afford any coffee :(
+You can't afford any sweets :(
+Press any key to continue . . .
+
+How much money have you saved?
+.61
+You can't afford any coffee :(
+You can afford a mini tart
+Press any key to continue . . .
+
+How much money have you saved?
+.76
+You can't afford any coffee :(
+You can afford a chocolate.
+Press any key to continue . . .
+
+How much money have you saved?
+1
+You can afford a small coffee.
+You can't afford any sweets :(
+Press any key to continue . . .
+
+How much money have you saved?
+1.3
+You can afford a regular coffee.
+You can't afford any sweets :(
+Press any key to continue . . .
+
+How much money have you saved?
+1.9
+You can afford a regular coffee.
+You can afford a mini tart
+Press any key to continue . . .
+
+How much money have you saved?
+2
+You can afford a regular coffee.
+You can afford a chocolate.
+Press any key to continue . . .
+
+How much money have you saved?
+1243567
+You can afford a regular coffee.
+You can afford a donut.
+Press any key to continue . . .
+*/

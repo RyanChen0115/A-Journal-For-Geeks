@@ -1,0 +1,142 @@
+#include <cstdlib>
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <cassert>
+using namespace std;
+class Artwork{
+    public:
+        string name, title;
+        unsigned int year;
+        Artwork(){
+            name = "";
+            title = "";
+            year = 0;
+        }
+        Artwork(string name_t, string title_t, unsigned int year_t){
+            name = name_t;
+            title = title_t;
+            year = year_t;
+        }
+        bool operator==(Artwork const & artwork_2) const{
+            return year==artwork_2.year && name == artwork_2.name && title == artwork_2.title;
+        }
+
+};
+
+class SoldArtwork : public Artwork{
+    public:
+        string customer_name, customer_address;
+        double sale_amount;
+        SoldArtwork(Artwork & art){
+            name = art.name;
+            title = art.title;
+            year = art.year;
+        }
+        SoldArtwork(){
+            customer_name = "";
+            customer_address = "";
+            sale_amount = 0;
+        }
+        SoldArtwork(string c_name_t, string c_address_t, double sale_amount_t){
+            customer_name = c_name_t;
+            customer_address = c_address_t;
+            sale_amount = sale_amount_t;
+        }
+        bool operator==(SoldArtwork const & sold_artwork_2) const{
+            return customer_name==sold_artwork_2.customer_name && customer_address == sold_artwork_2.customer_address && sale_amount == sold_artwork_2.sale_amount;
+        }
+};
+class ArtCollection{
+    public:
+        vector<Artwork> artwork_list;
+        vector<SoldArtwork> sold_artwork_list;
+        bool insert_artwork(const Artwork& artwork_info){
+            for(vector<Artwork>::iterator it = artwork_list.begin();it != artwork_list.end();++it){
+                if(*it == artwork_info){
+                    return false;
+                }
+            }
+            artwork_list.push_back(artwork_info);
+            return true;
+        }
+        bool sell_artwork(const SoldArtwork& artwork_info){
+            for(vector<Artwork>::iterator it = artwork_list.begin();it != artwork_list.end();++it){
+                if(*it == static_cast<Artwork>(artwork_info)){
+                    sold_artwork_list.push_back(artwork_info);
+                    artwork_list.erase(it);
+                    return true;
+                }
+            }
+            return false;
+        }
+        bool operator==(ArtCollection const & artcollection_2) const{
+            return artwork_list == artcollection_2.artwork_list && sold_artwork_list == artcollection_2.sold_artwork_list;
+        }
+        friend ArtCollection operator+(const ArtCollection &artcollection_1, const ArtCollection &artcollection_2);
+};
+ArtCollection operator+(const ArtCollection & artcollection_1, ArtCollection & artcollection_2){
+    vector<Artwork> new_artwork_list(artcollection_1.artwork_list);
+    vector<SoldArtwork> new_sold_artwork_list(artcollection_1.sold_artwork_list);
+    for(vector<Artwork>::iterator it = artcollection_2.artwork_list.begin();it != artcollection_2.artwork_list.end();++it){
+        new_artwork_list.push_back(*it);
+    }
+    for(vector<SoldArtwork>::iterator it = artcollection_2.sold_artwork_list.begin();it != artcollection_2.sold_artwork_list.end();++it){
+        new_sold_artwork_list.push_back(*it);
+    }
+    ArtCollection new_art;
+    new_art.artwork_list = new_artwork_list;
+    new_art.sold_artwork_list = new_sold_artwork_list;
+    return new_art;
+}
+
+void test_comparing_artwork(){
+    Artwork a1("test1","TitleTest",2000);
+    Artwork a2("test1","TitleTest",2000);
+    assert(a1 == a2 && "Test 1: Checked similar artworks are same");
+    Artwork a3;
+    assert(!(a1 == a3) && "Test 2: Checked dissimilar artworks are unequal");
+    cout << "Comparing artworks passed" << endl;
+}
+
+void test_comparing_sold_artwork(){
+    SoldArtwork a1("test1","TitleTest",2000);
+    SoldArtwork a2("test1","TitleTest",2000);
+    assert(a1 == a2 && "Test 1: Checked similar sold artworks are same");
+    SoldArtwork a3;
+    assert(!(a1 == a3) && "Test 2: Checked dissimilar sold artworks are unequal");
+    cout << "Comparing sold artworks passed" << endl;
+}
+
+void test_insertting_artwork_collection(){
+    ArtCollection art_coll_1; 
+    Artwork a1 = Artwork();
+    assert(art_coll_1.insert_artwork(a1) && "Test 1: Checked insertting one artwork succeeds");
+    assert(!art_coll_1.insert_artwork(a1) && "Test 2: Checked insertting duplicate artwork fails");
+    cout << "Inserting art into collection passed" << endl;
+}
+void test_sell_artwork(){
+    ArtCollection art_coll_1; 
+    Artwork a1("test1","TitleTest",2000);
+    Artwork a2;
+    Artwork a3("test5","555",0);
+    SoldArtwork sa1(a2);
+    SoldArtwork sa2(a3);
+    art_coll_1.insert_artwork(a1);
+    art_coll_1.insert_artwork(a2);
+    assert(art_coll_1.sell_artwork(sa1) && "Test 1: Checked selling an artwork");
+    assert(!art_coll_1.sell_artwork(sa1) && "Test 2: Checked selling an artwork twice");
+    assert(!art_coll_1.sell_artwork(sa2) && "Test 3: Checked selling a non existant artwork");
+
+    cout << "Selling artworks passed" << endl;
+}
+
+int main(){
+    test_comparing_artwork();
+    test_comparing_sold_artwork();
+    test_insertting_artwork_collection();
+    test_sell_artwork();
+    cout << "All tests passed" << endl;
+}
+
+

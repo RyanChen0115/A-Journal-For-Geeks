@@ -1,0 +1,74 @@
+//Ryan Chen
+
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+
+//Always include following line
+using namespace std;
+
+int main()
+{
+	cout << "Input 3 side lengths." << endl;
+	
+	double side1 = 0, side2 = 0, side3 = 0;
+	cin >> side1 >> side2 >> side3;
+	
+	const double tol = 0.001;	
+	if ((side1 + side2 - side3) > -tol && (side1 + side3 - side2) > -tol &&
+		(side2 + side3 - side1) > -tol)
+	{
+	 	cout << "The triangle is a"; 
+	 	if	(fabs(side1 - side2) < tol || fabs(side1 - side3) < tol ||
+			fabs(side3 - side2) < tol)	
+			{
+			cout << "n isosceles ";
+		 		if  (fabs(side1 - side3) < tol && fabs(side1 - side2) < tol &&
+		 		fabs(side2 - side3) < tol)
+				cout << "equilateral ";
+			}			
+		else
+			cout << " scalene ";	
+		if (fabs(pow(side1,2) + pow(side2,2) - pow(side3,2)) < tol ||
+		fabs(pow(side1,2) + pow(side3,2) - pow(side2,2)) < tol ||
+		fabs(pow(side3,2) + pow(side2,2) - pow(side1,2)) < tol)
+			cout << "right angle "; 
+		cout << "triangle." << endl;
+	}
+	else
+		cout << "The triangle is invalid." << endl;
+	system("PAUSE");
+    return EXIT_SUCCESS;
+}
+
+/*
+Input 3 side lengths.
+1 1 65
+The triangle is invalid.
+Press any key to continue . . .
+
+Input 3 side lengths.
+2 2 3
+The triangle is an isosceles triangle.
+Press any key to continue . . .
+
+Input 3 side lengths.
+1 1 sqrt(2)
+The triangle is an isosceles right angle triangle.
+Press any key to continue . . .
+
+Input 3 side lengths.
+2 2 2
+The triangle is an isosceles equilateral triangle.
+Press any key to continue . . .
+
+Input 3 side lengths.
+4 3 2
+The triangle is a scalene triangle.
+Press any key to continue . . .
+
+Input 3 side lengths.
+3 4 5
+The triangle is a scalene right angle triangle.
+Press any key to continue . . .
+*/

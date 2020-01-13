@@ -1,0 +1,89 @@
+/*
+Yuvraj Gill
+Si Yuan Chen
+Assignment 7 Question 2
+*/
+
+#include<iostream>
+#include<iomanip>
+#include<cstdlib>
+#include<fstream>
+#include<cmath>
+
+using namespace std;
+
+int main()
+{
+	ifstream fin("vote.txt");
+	ofstream fout("elections.txt");
+	
+	if (!fin)
+	{
+		cout << "Unable to find file" << endl;
+		return EXIT_FAILURE;
+	}
+	
+	string runners[6];
+	for(int i=0; i<6; i++)
+	{
+		fin >> runners[i];
+	}
+	
+	int votes[6] ={0};
+	int candidate=1;
+	int spoiled=0;
+	int max = 0, run = 0;
+	bool condition = 0;
+	
+		while ((fin >> candidate) && (condition == 0))
+		{
+		
+			if (candidate < 1 || candidate > 6)
+			{
+				spoiled += 1;
+			}
+			else
+			{
+				votes[candidate-1]+= 1;
+			}
+			if (votes[candidate-1] > max)
+			{
+				max = votes[candidate-1];
+				run = (candidate-1);
+			}
+			for(int i=0; i<6; i++)
+			{
+				if (votes[i] >= 30000)
+					condition = 1;
+			}
+		}
+	
+	for(int y=0; y<6; y++)
+	{
+		fout << runners[y] << " " << votes[y] << endl;
+	}
+	fout << "The winner was " << runners[run] << " " << votes[run] << endl;
+	fout << "The number of spoiled votes was " << spoiled << endl;
+	
+	fin.close();
+	fout.close();
+
+		system("PAUSE");
+    return EXIT_SUCCESS;
+	
+}
+
+
+/*
+Peter_Braid 27513
+Bardish_Chagger 11117
+Diane_Freeman 4785
+Emma_HawleyYan 564
+Richard_Walsh 1036
+Blaine_Watson 548
+The winner was Peter_Braid 27513
+The number of spoiled votes was 7890
+
+
+
+*/

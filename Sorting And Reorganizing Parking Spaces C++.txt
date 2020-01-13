@@ -1,0 +1,261 @@
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+using namespace std;
+
+
+const int SPACES = 50;
+
+//finding lowest available space
+int lowestValidSpace(string name[], bool personType[], int parkspace[])
+{
+	int lowestSpace = 51;
+	for(int row=0; row<SPACES; row++)
+	{
+		if(name[row]== "")
+			if (lowestSpace > parkspace[row])
+				lowestSpace = parkspace[row];
+	}
+	
+	return lowestSpace;
+}
+//assigning new parking spaces
+void newSpace(ifstream & newspace, bool statNew[], string nameNew[])
+{
+	for (int i = 0; i < SPACES; i++)
+	newspace >> statNew[i] >> nameNew[i];
+}
+//leaving parking array
+void leftSpace(ifstream & leaving, bool statLeft[], string nameLeft[])
+{
+	for (int i = 0; i < SPACES; i++)
+	leaving >> statLeft[i] >> nameLeft[i];	
+}
+
+//removing leaving people from current array
+void leaving(string name[], string nameLeft[])
+{
+	for (int i = 0; i < SPACES; i++)
+	{
+		for (int b = 0; b < SPACES; b++)
+		if (name[i] == nameLeft[b])
+		name[i] = "";
+	}
+}
+//assigning new parkers to spaces
+void newAssign(bool statNew[], string nameNew[], bool personType[],
+string name[], int parkSpace[])
+{
+	for (int i = 0; i < SPACES; i++)
+	{
+		bool found = 0;
+		int lowSpace = lowestValidSpace(name, personType, parkSpace);
+		if (lowSpace < 51)
+		{
+			if (statNew[i] == 1)
+			{
+				if (lowSpace <= 25)
+				{
+					personType[lowSpace - 1] = statNew[i];
+					name[lowSpace - 1] = nameNew[i];
+					found = 1;
+				}
+				else
+				for (int b = 0; b <= 25 && found == 0; b++)
+				{
+					if(name[b] == "")
+					{
+						personType[b] = statNew[i];
+						name[b] = nameNew[i];
+						found = 1;
+					}
+				}
+			}
+			else
+			{
+				if (lowSpace > 25)
+				{
+					personType[lowSpace - 1] = statNew[i];
+					name[lowSpace - 1] = nameNew[i];
+					found = 1;
+				}
+				else
+				for (int b = 26; b < SPACES && found == 0; b++)
+				{
+					if(name[b] == "")
+					{
+						personType[b] = statNew[i];
+						name[b] = nameNew[i];
+						found = 1;
+					}
+				}
+			}
+			if (found == 0)
+			{
+				for (int b = 0; b < SPACES && found == 0; b++)
+				{
+					if(name[b] == "")
+					{
+						personType[b] = statNew[i];
+						name[b] = nameNew[i];
+						found = 1;
+					}
+				}
+			}
+		}
+	}
+}
+
+//c-out for new parking space layout
+void newPark(ofstream & winterParking, bool personType[],
+string name[], int parking[])
+{
+	winterParking << setw(7) << "Status" << setw(20) << "Name"
+	<< setw(7) << "Space" << endl;
+	for (int i = 0; i < SPACES; i ++)
+	{
+		winterParking << setw(7) << personType[i] << setw(20) << name[i]
+		<< setw(7) << parking[i] << endl;
+	}
+}
+
+
+ //assigning current spaces to arrays
+void currentSpace( ifstream & currentspace, bool personType[], 
+	string name[], int parkspace[])
+	{	
+		string holderName = "";
+		int holderStat = 0;
+		int spaceNum = 0;
+		for(int row = 0; row< SPACES; row++)
+		{
+			currentspace >> holderStat >> holderName >> spaceNum;
+			personType[spaceNum-1] = holderStat;
+			name[spaceNum-1] = holderName;
+		}
+	}
+
+
+//reassigning teachers to lower space
+void moveDown(string name[], bool personType[], int parkSpace[])
+{
+	for (int i = 0; i < SPACES; i++)
+	{
+		bool found = 0;
+		int lowestSpace = lowestValidSpace(name, personType, parkSpace);
+		if (lowestSpace <= 25)
+		{
+			for (int b = 26; b < (SPACES + 1) && found == 0; b++)
+			if(personType[b] == 1)
+			{
+				personType[lowestSpace - 1] = personType[b];
+				name[lowestSpace - 1] = name[b];
+				name[b] = "";
+				personType[b] = 0;
+				found = 1;
+			}
+		}
+	}
+}
+	
+
+int main()
+{
+	ifstream currentspace("parking_current.txt");
+	ifstream newspace("parking_add.txt");
+	ifstream leftspace("parking_remove.txt");
+	if (!currentspace || !newspace || !leftspace)
+	{
+		system("PAUSE");
+		return EXIT_FAILURE;
+	}
+	ofstream winterparking("parkingW20.txt");
+	bool personType[SPACES] = {0}, statNew[SPACES] = {0}; 
+	bool statLeft[SPACES] = {0};
+	int parkSpace[SPACES] = {1};
+	
+	for (int i = 0; i <= SPACES; i++)
+	{
+		parkSpace[i] = i+1;	}
+	string name[SPACES], nameNew[SPACES], nameLeft[SPACES];
+	
+	currentSpace(currentspace, personType, name, parkSpace);
+	newSpace(newspace, statNew, nameNew);
+	leftSpace(leftspace, statLeft, nameLeft);
+	
+	leaving(name, nameLeft);
+	
+	newAssign(statNew, nameNew, personType, name, parkSpace);
+
+	moveDown(name, personType, parkSpace);
+	
+	newPark(winterparking, personType, name, parkSpace);
+	
+	currentspace.close();
+	newspace.close();
+	leftspace.close();
+	winterparking.close();
+	
+	system("PAUSE");
+	return EXIT_SUCCESS;
+}
+
+/*
+ Status                Name  Space
+      1      Manezes_Alfred      1
+      1       Tuncel_Levent      2
+      1       Pritzker_Mark      3
+      1       Gryguc_Andrew      4
+      1     Fluid_Newtonian      5
+      0     Kandathil_Ashar      6
+      1      McKinnon_David      7
+      0       Keillor_Peter      8
+      0   Eltantawy_Mostafa      9
+      0           Paik_Chad     10
+      1         Davison_Dan     11
+      1        Bedi_Sanjeev     12
+      0    Elliott_Jennifer     13
+      1        Jeremy_Pavan     14
+      1      Yodelay_he_who     15
+      1        Xie_Wei-Chau     16
+      1         Hulls_Carol     17
+    167        Hmeidan_Amer     18
+      0      Malloch_Jeremy     19
+      0                         20
+      1        McKillop_Bob     21
+      0                         22
+      0                         23
+      0                         24
+      1     Davidson_George     25
+      0            Lung_Ian     26
+      0        Hmeidan_Amer     27
+      0       Huot_Isabella     28
+      0          Lau_Amanda     29
+      0                         30
+      0          Mills_Joel     31
+      0            Tan_Mark     32
+      0        Roller_Anika     33
+      0    Starratt_Kathryn     34
+      0    Jasmine_Princess     35
+      0        Belisle_Matt     36
+      0        Wang_Willian     37
+      0    Barakat_Abdullah     38
+      0    Samlalsingh_Ryan     39
+      0      Hamza_Muhammad     40
+      0           Zheng_Tim     41
+      0          Yuan_Jacky     42
+      0         Ratiu_Timea     43
+      0       Sheng_Stephen     44
+      0             Kim_Leo     45
+      0                         46
+      0    Yousufzay_Namoos     47
+      0    Clifford_Zachary     48
+      0          Lau_Darren     49
+      0        Bhamare_Yash     50
+*/
+	
+	
+	
+

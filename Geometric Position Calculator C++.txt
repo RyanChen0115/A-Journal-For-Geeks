@@ -1,0 +1,45 @@
+//Ryan Chen
+
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+
+//Always include following line
+using namespace std;
+
+int main()
+{
+	cout << "Enter the length of the arm and its angle." << endl;
+	
+	double length = 0;
+	double angle = 0;
+	
+	cin >> length >> angle;
+	
+	double rad = angle * (M_PI / 180);
+	double y = length * sin(rad);
+	double x = length * cos(rad);
+	
+	cout << "The position of the end effector is (" << x << "," << y << ")."
+		<< endl;
+	system("PAUSE");
+	
+    return EXIT_SUCCESS;	
+}
+
+/*
+Enter the length of the arm and its angle.
+1 45
+The position of the end effector is (0.707107,0.707107).
+Press any key to continue . . .
+
+Enter the length of the arm and its angle.
+2.5 110
+The position of the end effector is (-0.85505,2.34923).
+Press any key to continue . . .
+
+Enter the length of the arm and its angle.
+1 -30
+The position of the end effector is (0.866025,-0.5).
+Press any key to continue . . .
+*/
